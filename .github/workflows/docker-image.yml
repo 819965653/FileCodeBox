@@ -1,18 +1,10 @@
 name: Build and push Docker image
 
 on:
-  workflow_dispatch:  # 手动触发
+  workflow_dispatch:
   push:
-    branches:
-      - master
-      - dev
-    tags:
-      - 'v*'
-      - 'vk*'  # 如果有这个 tag 规则
-
-env:
-  REGISTRY: docker.qjbb.cn  # 你的私有 registry 域名
-  IMAGE_NAME: filecodebox
+    branches: [ master, dev ]
+    tags: [ 'v*', 'vk*' ]
 
 jobs:
   build:
@@ -25,17 +17,12 @@ jobs:
         with:
           submodules: true
 
-      # 可选：提取 metadata（如 tags/labels），如果你原有就有就保留
-      - name: Extract metadata (tags, labels) for Docker
+      # 如果原有有 metadata，保留；否则可删
+      - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: $$   {{ env.REGISTRY }}/   $${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=branch
-            type=ref,event=tag
-            type=sha
+          images: docker.qjbb.cn/filecodebox  # 硬编码测试
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -43,29 +30,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to private registry
+      - name: Login to registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: admin     # 仓库 Secrets 里的用户名
-          password: admin     # Secrets 里的密码/token
+          registry: docker.qjbb.cn
+          username: admin
+          password: admin
 
-      - name: Build and push multi-arch image
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile  # 确认你的 Dockerfile 路径
-          platforms: linux/amd64,linux/arm64  # 关键：多架构构建！
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            $$   {{ env.REGISTRY }}/   $${{ env.IMAGE_NAME }}:latest
-            $$   {{ env.REGISTRY }}/   $${{ env.IMAGE_NAME }}:${{ github.sha }}
-            ${{ steps.meta.outputs.tags }}  # 如果你用了 metadata-action，就合并
-          labels: ${{ steps.meta.outputs.labels }}
+            docker.ajbb.cn/filecodebox:latest
+            docker.ajbb.cn/filecodebox:${{ github.sha }}
+          labels: ${{ steps.meta.outputs.labels }}  # 如果有 meta
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      # 可选：清理缓存节省空间
-      - name: Cleanup
-        if: always()
-        run: docker buildx prune -f
