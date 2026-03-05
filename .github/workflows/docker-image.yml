@@ -45,8 +45,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            docker.ajbb.cn/filecodebox:latest
-            docker.ajbb.cn/filecodebox:${{ github.sha }}
+            docker.qjbb.cn/filecodebox:latest
+            docker.qjbb.cn/filecodebox:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}  # 如果有 meta
           cache-from: type=gha
           cache-to: type=gha,mode=max
