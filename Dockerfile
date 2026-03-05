@@ -6,20 +6,20 @@ RUN apk add --no-cache git python3 make g++
 WORKDIR /build
 
 # 克隆并构建 2024 主题
-RUN git clone --depth 1 https://github.com/vastsa/FileCodeBoxFronted.git /build/fronted-2024 && \
+RUN git clone --depth 1 https://github.com/819965653/FileCodeBoxFronted.git /build/fronted-2024 && \
     cd /build/fronted-2024 && \
     npm install && \
     npm run build
 
 # 克隆并构建 2023 主题
-RUN git clone --depth 1 https://github.com/vastsa/FileCodeBoxFronted2023.git /build/fronted-2023 && \
+RUN git clone --depth 1 https://github.com/819965653/FileCodeBoxFronted2023.git /build/fronted-2023 && \
     cd /build/fronted-2023 && \
     npm install --legacy-peer-deps && \
     npm run build
 
 # 第二阶段：构建最终镜像
-FROM python:3.12-slim-bookworm
-LABEL author="Lan"
+FROM python:3.9.6-slim-buster
+LABEL author="LW"
 LABEL email="xzu@live.com"
 
 WORKDIR /app
@@ -40,11 +40,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # 环境变量配置
 ENV HOST="0.0.0.0" \
-    PORT=12345 \
+    PORT=2222 \
     WORKERS=1 \
-    LOG_LEVEL="info"
+    LOG_LEVEL="debug"
 
-EXPOSE 12345
+EXPOSE 2222
 
 # 生产环境启动命令
 CMD uvicorn main:app \

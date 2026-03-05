@@ -90,6 +90,7 @@ class ConfigService:
                 "errorCount",
                 "errorMinute",
                 "max_save_seconds",
+                "max_storage_size",
                 "onedrive_proxy",
                 "openUpload",
                 "port",

@@ -28,6 +28,7 @@ DEFAULT_CONFIG = {
     "s3_hostname": "",
     "s3_proxy": 0,
     "max_save_seconds": 0,
+    "max_storage_size": 1024 * 1024 * 1024 * 10,  # 10GB
     "aws_session_token": "",
     "onedrive_domain": "",
     "onedrive_client_id": "",

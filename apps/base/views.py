@@ -95,6 +95,19 @@ async def validate_file_size(file: UploadFile, max_size: int) -> int:
     return size
 
 
+async def check_storage_capacity(file_size: int) -> bool:
+    """检查存储容量是否足够"""
+    # 如果配置允许游客上传开关打开，才检查容量
+    if settings.openUpload:
+        # 计算当前总容量
+        total_size = await FileCodes.all().values_list("size", flat=True)
+        current_total_size = sum(total_size) if total_size else 0
+        # 检查本次上传+当前总容量是否大于最大值
+        if current_total_size + file_size > settings.max_storage_size:
+            return False
+    return True
+
+
 async def create_file_code(code, **kwargs):
     return await FileCodes.create(code=code, **kwargs)
 
@@ -135,6 +148,9 @@ async def share_file(
     ip: str = Depends(ip_limit["upload"]),
 ):
     file_size = await validate_file_size(file, settings.uploadSize)
+    # 检查存储容量
+    if not await check_storage_capacity(file_size):
+        raise HTTPException(status_code=403, detail="容量已满请联系管理员！")
     if expire_style not in settings.expireStyle:
         raise HTTPException(status_code=400, detail="过期时间类型错误")
     expired_at, expired_count, used_count, code = await get_expire_info(
@@ -243,6 +259,9 @@ async def init_chunk_upload(data: InitChunkUploadModel):
         raise HTTPException(
             status_code=403, detail=f"文件大小超过限制，最大为 {max_size_mb:.2f} MB"
         )
+    # 检查存储容量
+    if not await check_storage_capacity(data.file_size):
+        raise HTTPException(status_code=403, detail="容量已满请联系管理员！")
 
     # # 秒传检查
     # existing = await FileCodes.filter(file_hash=data.file_hash).first()
@@ -549,6 +568,9 @@ async def presign_upload_init(
             403,
             f"文件大小超过限制，最大为 {settings.uploadSize / (1024 * 1024):.2f} MB",
         )
+    # 检查存储容量
+    if not await check_storage_capacity(data.file_size):
+        raise HTTPException(status_code=403, detail="容量已满请联系管理员！")
     if data.expire_style not in settings.expireStyle:
         raise HTTPException(400, "过期时间类型错误")
 
