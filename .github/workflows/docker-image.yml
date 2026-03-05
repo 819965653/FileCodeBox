@@ -47,8 +47,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.DOCKER_USERNAME }}     # 仓库 Secrets 里的用户名
-          password: ${{ secrets.DOCKER_PASSWORD }}     # Secrets 里的密码/token
+          username: admin     # 仓库 Secrets 里的用户名
+          password: admin     # Secrets 里的密码/token
 
       - name: Build and push multi-arch image
         uses: docker/build-push-action@v6
