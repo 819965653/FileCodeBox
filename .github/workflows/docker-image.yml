@@ -11,7 +11,7 @@ on:
       - 'vk*'  # 如果有这个 tag 规则
 
 env:
-  REGISTRY: docker.ajbb.cn  # 你的私有 registry 域名
+  REGISTRY: docker.qjbb.cn  # 你的私有 registry 域名
   IMAGE_NAME: filecodebox
 
 jobs:
