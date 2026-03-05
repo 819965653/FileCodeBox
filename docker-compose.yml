@@ -1,7 +1,7 @@
 version: "3"
 services:
   file-code-box:
-    image: lw11/filecodebox:latest
+    image: filecodebox:test1
     volumes:
       - fcb-data:/app/data:rw
     restart: unless-stopped

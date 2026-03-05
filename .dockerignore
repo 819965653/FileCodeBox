@@ -29,7 +29,7 @@ htmlcov/
 
 # Frontend source (will be built from GitHub)
 fcb-fronted/
-themes/
+#themes/
 
 # Test files
 test_*.py
