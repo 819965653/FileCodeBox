@@ -162,4 +162,4 @@ AGENTS.md
 
 dist/
 # Frontend themes (built from GitHub during Docker build)
-themes/
+#themes/
